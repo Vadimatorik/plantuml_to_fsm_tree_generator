@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <QString>
+#include <QRegularExpression>
 
 /*!
  * Метод ищет в planuml файле функцию точки входа.

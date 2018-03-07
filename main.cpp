@@ -3,7 +3,7 @@
 /*!
  * Ищем строку
  */
-#define REG_EXP_TEMPLATE_ENTRY_POINT				"[[][*]]\\s-->\\s[^\\s]*"
+#define REG_EXP_TEMPLATE_ENTRY_POINT				"^\\[\\*]\\s*-->\\s*\\w*\\s*\n$"
 
 QString search_entry_point ( char* file_path ) {
 	QString entry_point_func_name;
@@ -15,11 +15,11 @@ QString search_entry_point ( char* file_path ) {
 	if ( !b_r ) return entry_point_func_name;				/// Точка входа отсутствует.
 
 	QString	b;												/// Строка-буффер.
-	QRegExp	re_in( REG_EXP_TEMPLATE_ENTRY_POINT );
+	QRegularExpression re_in( REG_EXP_TEMPLATE_ENTRY_POINT );
 	while ( !f.atEnd() ) {
 		b = f.readLine();
-		i_r = re_in.indexIn( b );
-		if ( i_r == -1 ) continue;
+		b_r = b.contains( re_in );
+		if ( !b_r ) continue;
 	}
 }
 
