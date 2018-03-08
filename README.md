@@ -43,4 +43,5 @@ s3: После чего выход.
 @enduml
 ```
 Вид диаграммы состояний в PlantUML:
+
 ![Вид диаграммы состояний в PlantUML](https://image.ibb.co/j3Esf7/board.png)
