@@ -56,15 +56,30 @@ int create_output_file ( char* file_path, QString obj_class, QVector< vertex_str
 			extern_func_fsm_array += QString::number( vertex_count );
 			extern_func_fsm_array += " ] = {\n";
 
-			/// Описываем все соединения.
-			for ( int i = 0; i < vertex_count; i++ ) {
-				extern_func_fsm_array += "\t&";
+			/// Сортируем вектор переходов, чтобы потом найти в нем пробелы.
+			std::sort( tree->at( l ).vertex_connect->begin(), tree->at( l ).vertex_connect->end() );
 
+			/// Описываем все соединения.
+
+			/// Защита на случай, что будет пробел в переходах.
+			/// Пример, функция возвращает 0, 2, 3. А 1 - нет. Там должно быть nullptr.
+			long int counting_control = -1;
+
+			for ( int i = 0; i < vertex_count; i++ ) {
+				counting_control++;
+				/// Пробел в векторе переходов.
+				if ( counting_control !=  tree->at( l ).vertex_connect->at( i ).number ) {
+					extern_func_fsm_array += "\tnullptr,\n";
+					i--;
+					continue;
+				}
+
+				extern_func_fsm_array += "\t&";
 				extern_func_fsm_array += obj_class;
 				extern_func_fsm_array += "_";
 				/// Ищем соответствующему имени шага имя функции.
 				extern_func_fsm_array += get_name_func_from_name_step( tree->at( l ).vertex_connect->at( i ).connect_step, tree );
-				extern_func_fsm_array += "_fsm_step;";
+				extern_func_fsm_array += "_fsm_step";
 
 				if ( i != vertex_count - 1 ) {
 					extern_func_fsm_array += ",\n";

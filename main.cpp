@@ -1,6 +1,8 @@
 #include "main.h"
 
 int main ( int argc, char* argv[] ) {
+	(void)argc;
+
 	char* f_in;
 	char* f_out;
 	char* fsm_class_name;

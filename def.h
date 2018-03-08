@@ -11,6 +11,13 @@ struct vertex_connect_struct {
 	uint32_t		number;				/// При каком возвращаемом значении
 										/// метода вершины графа происходит
 										/// переход на этот шаг.
+
+	/// Оператор сравнения для сортировки вектора по возрастанию
+	/// number, чтобы потом можно было, отсортировав вектор
+	/// vertex_connect_struct-ов найти пробелы.
+	bool operator < ( const vertex_connect_struct& s ) const {
+			return ( number < s.number );
+	}
 };
 
 /*!
