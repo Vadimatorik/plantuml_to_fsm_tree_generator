@@ -126,11 +126,23 @@ state "name_func" as name_step {
 Для сборки проекта требуется наличие следующего программного обеспечения:
 1. Библиотека QT5.10+.
 
-Последовательность сборки:
+Последовательность сборки
+---------------------
 ```bash
 git clone git@github.com:Vadimatorik/plantuml_to_fsm_tree_generator.git
 cd plantuml_to_fsm_tree_generator/
 mkdir build && cd build/
 qmake -qt=qt5 ..
 make
+cd ..
 ```
+
+Сборка тестового файла.
+```bash
+./build/plantuml_to_fsm_tree_generator test/test.pu test/fsm_tree_board.cpp class_name_test
+```bash
+
+Описание параметров:
+1. Путь до входного файла.
+2. Путь до выходного файла.
+3. Имя класса, к которому будет относиться данное дерево.
