@@ -130,8 +130,7 @@ state "name_func" as name_step {
 ```bash
 git clone git@github.com:Vadimatorik/plantuml_to_fsm_tree_generator.git
 cd plantuml_to_fsm_tree_generator/
-mkdir build
-cd build/
+mkdir build && cd build/
 qmake -qt=qt5 ..
+make
 ```
->>>>>>> a44623747f96845058370f055910d4d428ef552e
