@@ -140,7 +140,7 @@ cd ..
 Сборка тестового файла.
 ```bash
 ./build/plantuml_to_fsm_tree_generator test/test.pu test/fsm_tree_board.cpp class_name_test
-```bash
+```
 
 Описание параметров:
 1. Путь до входного файла.
