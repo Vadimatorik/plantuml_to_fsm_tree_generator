@@ -45,3 +45,49 @@ s3: После чего выход.
 Вид диаграммы состояний в PlantUML:
 
 ![Вид диаграммы состояний в PlantUML](https://image.ibb.co/j3Esf7/board.png)
+
+Выходной файл text.cpp:
+
+```cpp
+#include "fsm.h"
+
+extern const fsm_step< pc_vin_decoder > pc_vin_decoder_spi_failure_handler_fsm_step;
+extern const fsm_step< pc_vin_decoder > pc_vin_decoder_gui_init_fsm_step;
+extern const fsm_step< pc_vin_decoder > pc_vin_decoder_dp_init_fsm_step;
+extern const fsm_step< pc_vin_decoder > pc_vin_decoder_further_actions_fsm_step;
+
+const fsm_step< pc_vin_decoder > pc_vin_decoder_spi_failure_handler_fsm_step = {
+	.func_step			= pc_vin_decoder::fsm_step_func_spi_failure_handler,
+	.next_step_array		= nullptr,
+	.number_array			= 0
+};
+
+const fsm_step< pc_vin_decoder >* pc_vin_decoder_gui_init_fsm_step_array[ 2 ] = {
+	&pc_vin_decoder_dp_init_fsm_step,
+	&pc_vin_decoder_spi_failure_handler_fsm_step
+};
+
+const fsm_step< pc_vin_decoder > pc_vin_decoder_gui_init_fsm_step = {
+	.func_step			= pc_vin_decoder::fsm_step_func_gui_init,
+	.next_step_array		= pc_vin_decoder_gui_init_fsm_step_array,
+	.number_array			= 2
+};
+
+const fsm_step< pc_vin_decoder >* pc_vin_decoder_dp_init_fsm_step_array[ 2 ] = {
+	&pc_vin_decoder_further_actions_fsm_step,
+	nullptr,
+	&pc_vin_decoder_spi_failure_handler_fsm_step
+};
+
+const fsm_step< pc_vin_decoder > pc_vin_decoder_dp_init_fsm_step = {
+	.func_step			= pc_vin_decoder::fsm_step_func_dp_init,
+	.next_step_array		= pc_vin_decoder_dp_init_fsm_step_array,
+	.number_array			= 2
+};
+
+const fsm_step< pc_vin_decoder > pc_vin_decoder_further_actions_fsm_step = {
+	.func_step			= pc_vin_decoder::fsm_step_func_further_actions,
+	.next_step_array		= nullptr,
+	.number_array			= 0
+};
+```
