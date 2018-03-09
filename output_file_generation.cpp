@@ -9,7 +9,13 @@ static QString get_name_func_from_name_step ( QString name_step, QVector< vertex
 	return "";
 }
 
-int create_output_file ( char* file_path, QString obj_class, QVector< vertex_struct >* tree ) {
+static void write_to_file ( QFile& f, QString& s ) {
+	QByteArray b_byte_string = s.toUtf8();
+	char* b_write = b_byte_string.data();
+	f.write( b_write );
+}
+
+int create_output_file ( char* file_path, QString obj_class, QVector< vertex_struct >* tree, char* handler_class_name ) {
 	QFile f( file_path );
 	bool b_r;
 
@@ -17,6 +23,9 @@ int create_output_file ( char* file_path, QString obj_class, QVector< vertex_str
 	if ( !b_r ) return ENOENT;
 
 	f.write( "#include \"fsm.h\"\n\n" );
+
+	QString s_handler = "#include \"" + QString( handler_class_name ) + "\"\n\n";
+	write_to_file( f, s_handler );
 
 	/// Перечень шагов.
 	for ( int l = 0; l < tree->size(); l++ ) {
@@ -33,10 +42,7 @@ int create_output_file ( char* file_path, QString obj_class, QVector< vertex_str
 			extern_func_fsm += "\n";
 		}
 
-		QByteArray b_byte_string = extern_func_fsm.toUtf8();
-		char* b_write = b_byte_string.data();
-
-		f.write( b_write );
+		write_to_file( f, extern_func_fsm );
 	}
 
 	/// Начинаем описывать сами шаги.
@@ -90,10 +96,7 @@ int create_output_file ( char* file_path, QString obj_class, QVector< vertex_str
 
 			extern_func_fsm_array += "};\n\n";
 
-			QByteArray b_byte_string = extern_func_fsm_array.toUtf8();
-			char* b_write = b_byte_string.data();
-
-			f.write( b_write );
+			write_to_file( f, extern_func_fsm_array );
 		}
 
 		/// Сам элемент графа.
@@ -127,12 +130,8 @@ int create_output_file ( char* file_path, QString obj_class, QVector< vertex_str
 		b_s_vertex += QString::number( vertex_count );
 		b_s_vertex += "\n};\n\n";
 
-
-		QByteArray b_byte_string = b_s_vertex.toUtf8();
-		char* b_write = b_byte_string.data();
-		f.write( b_write );
+		write_to_file( f, b_s_vertex );
 	}
-
 
 	f.close();
 	return 0;
