@@ -4,7 +4,15 @@
 using namespace std;
 
 int main ( int argc, char* argv[] ) {
-	(void)argc;
+	if ( argc != 5 ) {
+		cout << "Wrong number of arguments!" << endl;
+		cout << "It takes 4 arguments:" << endl;
+		cout << "1. Input file (path/name.pu)." << endl;
+		cout << "2. Output file (path/name.cpp)." << endl;
+		cout << "3. Class to which fsm refers." << endl;
+		cout << "4. A file containing a class description." << endl;
+		return -1;
+	}
 
 	char* f_in;
 	char* f_out;
