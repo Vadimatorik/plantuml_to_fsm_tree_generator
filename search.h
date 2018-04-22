@@ -8,6 +8,49 @@
 #include "def.h"
 
 /*!
+ * ССогласно этой структуре будет формироваться вывод дерева.
+ */
+struct treePrintFormat {
+	/// Путь и имя выходного файла с расширением.
+	char*							fileOutPath;
+
+	/// Имя класса, в который будут входить методы fsm.
+	QString*						className;
+
+	/// Разобранный граф.
+	QVector< vertex_struct >*		tree;
+
+	/// Имя include файла, в котором хранится описание используемого класса.
+	char*							handlerClassName;
+
+	/*!
+	 * false:
+	 * Входные параметры:
+	 * Имя класса:	ayplayer
+	 * Шаг:			base_object_init
+	 *
+	 * Имя структуры-старта:
+	 * ayplayer_class_base_object_init_fsm_step
+	 *
+	 * Имя шага в объекте.
+	 * fsm_step_base_object_init
+	 *
+	 *
+	 * true:
+	 * Входные параметры:
+	 * Имя класса:	AyPlayer
+	 * Шаг:			baseObjectInit
+	 *
+	 * Имя структуры-старта:
+	 * ayplayerClassBaseObjectInitFsmStep
+	 *
+	 * Имя шага в объекте.
+	 * fsmStepBaseObjectInit
+	 */
+	bool							flagCamelcase;
+};
+
+/*!
  * Черная магия, эльфийский.
  */
 #define REG_EXP_TEMPLATE_ENTRY_POINT					"^\\[\\*]\\s*-->\\s*\\w*\\s*\n$"
@@ -34,6 +77,27 @@
 #define REG_EXP_TEMPLATE_NUMBER_GET_RIGHT												 "\\s*\n$"
 
 /*!
+ * Вычленяет параметры вывода.
+ */
+/// Пример: CLASS_NAME						=		AyPlayer
+#define	REG_EXP_TEMPLATE_PARAM_AND_ARG					"^\\s*\\S*\\s*=\\s*\\S*\\s*\n$"
+
+/// Вычленяет: CLASS_NAME
+#define	REG_EXP_TEMPLATE_PARAM_REMOVE_LEFT				"^\\s*"
+#define	REG_EXP_TEMPLATE_PARAM_REMOVE_RIGHT						 "\\s*=\\s*\\S*\\s*\n$"
+
+/// Вычленяет: AyPlayer
+#define	REG_EXP_TEMPLATE_ARG_REMOVE_LEFT				"^\\s*\\S*\\s*=\\s*"
+#define	REG_EXP_TEMPLATE_ARG_REMOVE_RIGHT									  "\\s*\n$"
+
+/*!
+ * Ищет в файле строку типа:
+ * ПАРАМЕТР			=		АРГУМЕНТ
+ * Возвращает указатель на строку с аргументом.
+ */
+char* getFsmClassArg ( const char* const pathInputFile, QString parameter );
+
+/*!
  * Метод производит поиск строки в файле, удовлетворяющей
  * требованиям регулярного выражения REG_EXP_TEMPLATE_ENTRY_POINT,
  * читаемого как:
@@ -48,7 +112,7 @@
  * \return		Строка с именем шага, если таковой
  *				был найден или пустая строка.
  */
-QString search_entry_point_step_name ( char* file_path );
+QString searchEntryPointStepName ( char* file_path );
 
 
 /*!
@@ -60,7 +124,7 @@ QString search_entry_point_step_name ( char* file_path );
  *				имени шага или пустая строка, если таковая не была
  *				найдена.
  */
-int search_func_name_and_step_name ( char* file_path, QVector< vertex_struct >* tree );
+int searchFuncNameAndStepName ( char* file_path, QVector< vertex_struct >* tree );
 
 /*!
  * Метод заполняет вектор vertex_connect_struct у каждой вершины графа.
@@ -68,4 +132,4 @@ int search_func_name_and_step_name ( char* file_path, QVector< vertex_struct >* 
  * \param[in]	tree - составленное дерево вершин.
  * \return		Успешность соединения вершин.
  */
-int search_connect_step ( char* file_path, QVector< vertex_struct >* tree );
+int searchConnectStep ( char* file_path, QVector< vertex_struct >* tree );

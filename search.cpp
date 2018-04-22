@@ -1,6 +1,55 @@
 #include "search.h"
 
-QString search_entry_point_step_name ( char* file_path ) {
+char* getFsmClassArg ( const char* const pathInputFile, QString parameter ) {
+	char*	returnArg = nullptr;
+
+	QFile f( pathInputFile );
+	bool r;
+
+	r = f.open( QIODevice::ReadOnly | QIODevice::Text );
+	if ( !r ) return nullptr;
+
+	QString	b;
+	QRegularExpression reIn( REG_EXP_TEMPLATE_PARAM_AND_ARG );
+	QRegularExpression inParamRemoveLeft( REG_EXP_TEMPLATE_PARAM_REMOVE_LEFT );
+	QRegularExpression inParamRemoveRight( REG_EXP_TEMPLATE_PARAM_REMOVE_RIGHT );
+	QRegularExpression inArgRemoveLeft( REG_EXP_TEMPLATE_ARG_REMOVE_LEFT );
+	QRegularExpression inArgRemoveRight( REG_EXP_TEMPLATE_ARG_REMOVE_RIGHT );
+
+	/// Пытаемся найти строку под шаблон.
+	while ( !f.atEnd() ) {
+		b = f.readLine();
+		r = b.contains( reIn );
+
+		if ( !r )
+			continue;
+
+		/// Смотрим на параметр.
+		QString stringFileParam = b;
+		stringFileParam = stringFileParam.remove( inParamRemoveLeft );
+		stringFileParam = stringFileParam.remove( inParamRemoveRight );
+
+		if ( stringFileParam != parameter )
+			continue;
+
+		QString arg = b;
+		arg = arg.remove( inArgRemoveLeft );
+		arg = arg.remove( inArgRemoveRight );
+
+		uint32_t countChar = arg.length();
+
+		/// +1 - нуль-терминатор.
+		returnArg = new char[ countChar + 1 ];
+		qstrncpy( returnArg, qPrintable( arg ), countChar + 1 );
+		break;
+	}
+
+	f.close();
+	return returnArg;
+}
+
+
+QString searchEntryPointStepName ( char* file_path ) {
 	QString entry_point_step_name;
 	QFile f( file_path );
 	bool b_r;
@@ -28,7 +77,7 @@ QString search_entry_point_step_name ( char* file_path ) {
 	return entry_point_step_name;
 }
 
-int search_func_name_and_step_name ( char* file_path, QVector< vertex_struct >* tree ) {
+int searchFuncNameAndStepName ( char* file_path, QVector< vertex_struct >* tree ) {
 	QString func_name;
 	QFile f( file_path );
 	bool b_r;
@@ -61,9 +110,9 @@ int search_func_name_and_step_name ( char* file_path, QVector< vertex_struct >* 
 
 		// Сохраняем выделенное в дерево.
 		vertex_struct		b_vs;
-		b_vs.func_name		= b_f_name;
-		b_vs.step_name		= b_step_name;
-		b_vs.vertex_connect	= new QVector< vertex_connect_struct >;
+		b_vs.funcName		= b_f_name;
+		b_vs.stepName		= b_step_name;
+		b_vs.vertexConnect	= new QVector< vertex_connect_struct >;
 
 		tree->append( b_vs );
 	}
@@ -72,7 +121,7 @@ int search_func_name_and_step_name ( char* file_path, QVector< vertex_struct >* 
 	return 0;
 }
 
-int search_connect_step ( char* file_path, QVector< vertex_struct >* tree ) {
+int searchConnectStep ( char* file_path, QVector< vertex_struct >* tree ) {
 	QString func_name;
 	QFile f( file_path );
 	bool b_r;
@@ -115,7 +164,7 @@ int search_connect_step ( char* file_path, QVector< vertex_struct >* tree ) {
 
 		// Ищем, какой вершине пренадлежит этот коннект.
 		for ( int l = 0; l < tree->size(); l++ ) {
-			if ( tree->at( l ).step_name != b_in ) continue;		// Ищем вершину, которую будем к чему-то подключать.
+			if ( tree->at( l ).stepName != b_in ) continue;		// Ищем вершину, которую будем к чему-то подключать.
 
 			int b_connect_number = b_number.toInt();
 
@@ -123,7 +172,7 @@ int search_connect_step ( char* file_path, QVector< vertex_struct >* tree ) {
 			b_vcs.connect_step		= b_out;
 			b_vcs.number			= b_connect_number;
 
-			tree->at( l ).vertex_connect->append( b_vcs );
+			tree->at( l ).vertexConnect->append( b_vcs );
 			break;
 		}
 	}
