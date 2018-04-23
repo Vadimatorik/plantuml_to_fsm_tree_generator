@@ -11,7 +11,6 @@ Plantuml to fsm tree generator
 ```plantuml
 CLASS_NAME						=		AyPlayer
 FILE_WITH_CLASS_DESCRIPTION		=		ayplayer.h
-CAMELCASE						=		ON
 
 @startuml
 
@@ -55,50 +54,51 @@ s3: После чего выход.
 
 ```cpp
 #include "fsm.h"
+#include "ayplayer.h"
 
-extern const fsm_step< pc_vin_decoder > pc_vin_decoder_spi_failure_handler_fsm_step;
-extern const fsm_step< pc_vin_decoder > pc_vin_decoder_gui_init_fsm_step;
-extern const fsm_step< pc_vin_decoder > pc_vin_decoder_dp_init_fsm_step;
-extern const fsm_step< pc_vin_decoder > pc_vin_decoder_further_actions_fsm_step;
+extern const fsmStep< AyPlayer > ayPlayerSpiFailureHandlerFsmStep;
+extern const fsmStep< AyPlayer > ayPlayerGuiInitFsmStep;
+extern const fsmStep< AyPlayer > ayPlayerDpInitFsmStep;
+extern const fsmStep< AyPlayer > ayPlayerFurtherActionsFsmStep;
 
-const fsm_step< pc_vin_decoder > pc_vin_decoder_spi_failure_handler_fsm_step = {
-	.func_step			= pc_vin_decoder::fsm_step_func_spi_failure_handler,
-	.next_step_array		= nullptr,
-	.number_array			= 0
+const fsmStep< AyPlayer > ayPlayerSpiFailureHandlerFsmStep = {
+	.funcStep				= AyPlayer::fsmStepFuncSpiFailureHandler,
+	.nextStepArray			= nullptr,
+	.numberArray			= 0
 };
 
-const fsm_step< pc_vin_decoder >* pc_vin_decoder_gui_init_fsm_step_array[ 2 ] = {
-	&pc_vin_decoder_dp_init_fsm_step,
-	&pc_vin_decoder_spi_failure_handler_fsm_step
+const fsmStep< AyPlayer >* ayPlayerGuiInitFsmStepArray[ 2 ] = {
+	&ayPlayerDpInitFsmStep,
+	&ayPlayerSpiFailureHandlerFsmStep
 };
 
-const fsm_step< pc_vin_decoder > pc_vin_decoder_gui_init_fsm_step = {
-	.func_step			= pc_vin_decoder::fsm_step_func_gui_init,
-	.next_step_array		= pc_vin_decoder_gui_init_fsm_step_array,
-	.number_array			= 2
+const fsmStep< AyPlayer > ayPlayerGuiInitFsmStep = {
+	.funcStep				= AyPlayer::fsmStepFuncGuiInit,
+	.nextStepArray			= ayPlayerGuiInitFsmStepArray,
+	.numberArray			= 2
 };
 
-const fsm_step< pc_vin_decoder >* pc_vin_decoder_dp_init_fsm_step_array[ 2 ] = {
-	&pc_vin_decoder_further_actions_fsm_step,
+const fsmStep< AyPlayer >* ayPlayerDpInitFsmStepArray[ 3 ] = {
+	&ayPlayerFurtherActionsFsmStep,
 	nullptr,
-	&pc_vin_decoder_spi_failure_handler_fsm_step
+	&ayPlayerSpiFailureHandlerFsmStep
 };
 
-const fsm_step< pc_vin_decoder > pc_vin_decoder_dp_init_fsm_step = {
-	.func_step			= pc_vin_decoder::fsm_step_func_dp_init,
-	.next_step_array		= pc_vin_decoder_dp_init_fsm_step_array,
-	.number_array			= 2
+const fsmStep< AyPlayer > ayPlayerDpInitFsmStep = {
+	.funcStep				= AyPlayer::fsmStepFuncDpInit,
+	.nextStepArray			= ayPlayerDpInitFsmStepArray,
+	.numberArray			= 3
 };
 
-const fsm_step< pc_vin_decoder > pc_vin_decoder_further_actions_fsm_step = {
-	.func_step			= pc_vin_decoder::fsm_step_func_further_actions,
-	.next_step_array		= nullptr,
-	.number_array			= 0
+const fsmStep< AyPlayer > ayPlayerFurtherActionsFsmStep = {
+	.funcStep				= AyPlayer::fsmStepFuncFurtherActions,
+	.nextStepArray			= nullptr,
+	.numberArray			= 0
 };
 ```
 Правила использования
 ---------------------
-* Точка входа в граф определяется по строке типа: <<[*] --> s1 >>
+* Точка входа в граф определяется по строке типа: <<[*] --> s1>>
     Где:
     1. Строка начинается с последовательности символов <<[*]>>.
     2. Любой пробельный символ (пробел, tab). Возможно его отсутствие вовсе.
@@ -107,24 +107,24 @@ const fsm_step< pc_vin_decoder > pc_vin_decoder_further_actions_fsm_step = {
     5. Имя последовательности (не путать с действительным именем вершины графа!).
 * Каждая вершина графа должна быть определена по типу:
 ```cpp
-state "name_func" as name_step {
-name_step: Любые комментарии.
-name_step: Но они могут отсутствовать.
+state "nameFunc" as nameStep {
+nameStep: Любые комментарии.
+nameStep: Но они могут отсутствовать.
 }
 ```
 
 Или
 
 ```cpp
-state "name_func" as name_step {
+state "nameStep" as nameStep {
 }
 ```
 
     Где:
-    1. name_func - имя вершины графа.
-    2. name_step - имя шага. Именно по средством этого имени происходит связывание вершин.
+    1. nameStep - имя вершины графа.
+    2. nameStep - имя шага. Именно по средством этого имени происходит связывание вершин.
 * Предполагается, что сгенерированное дерево будет входить в состав класса. Методы, вызываемые в вершинах графа, будут являться static методами класса.
-* Именя методов, являющимеся частью класса, в который входит fsm, генерируются автоматически по шаблону: строка <<fsm_step_func_>> + name_func.
+* Имена методов, являющимеся частью класса, в который входит fsm, генерируются автоматически по шаблону: строка <<fsmStepFunc>> + NameFunc.
 
 Требования к программному обеспечению
 ---------------------
@@ -137,17 +137,30 @@ state "name_func" as name_step {
 git clone git@github.com:Vadimatorik/plantuml_to_fsm_tree_generator.git
 cd plantuml_to_fsm_tree_generator/
 mkdir build && cd build/
-qmake -qt=qt5 ..
+qmake ..
 make
 cd ..
 ```
 
 Сборка тестового файла.
 ```bash
-./build/plantuml_to_fsm_tree_generator test/test.pu test/fsm_tree_board.cpp class_name_test
+./build/plantuml_to_fsm_tree_generator test/test.pu test/fsm_tree_board.cpp
 ```
 
 Описание параметров:
 1. Путь до входного файла.
 2. Путь до выходного файла.
-3. Имя класса, к которому будет относиться данное дерево.
+
+Параметры генерации
+---------------------
+В заголовке файла должны быть определены следующие константы:
+
+CLASS_NAME
+Имя класса, к которому будет относиться FSM дерево.
+Пример:
+CLASS_NAME						=		AyPlayer
+
+FILE_WITH_CLASS_DESCRIPTION
+Путь до файла с описанием класса, к которому будет относиться FSM дерево.
+Пример: 
+FILE_WITH_CLASS_DESCRIPTION		=		ayplayer.h

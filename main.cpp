@@ -58,23 +58,6 @@ int main ( int argc, char* argv[] ) {
 	}
 	printCfg.handlerClassName = handlerClass;
 
-
-	/// Стиль оформления методов.
-	char*	camelcase;
-	camelcase = getFsmClassArg( pathFileIn, "CAMELCASE" );
-	if ( camelcase == nullptr ) {
-		cout << "Parametr <<CAMELCASE>> not finded!"		<< endl;
-		return 0;
-	}
-
-	if ( strcmp( camelcase, "ON" ) == 0 ) {
-		printCfg.flagCamelcase = true;
-	} else {
-		printCfg.flagCamelcase = false;
-	}
-
-	delete[] camelcase;
-
 	QString enter_step_name;
 	enter_step_name = searchEntryPointStepName( pathFileIn );
 

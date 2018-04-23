@@ -22,32 +22,6 @@ struct treePrintFormat {
 
 	/// Имя include файла, в котором хранится описание используемого класса.
 	char*							handlerClassName;
-
-	/*!
-	 * false:
-	 * Входные параметры:
-	 * Имя класса:	ayplayer
-	 * Шаг:			base_object_init
-	 *
-	 * Имя структуры-старта:
-	 * ayplayer_class_base_object_init_fsm_step
-	 *
-	 * Имя шага в объекте.
-	 * fsm_step_base_object_init
-	 *
-	 *
-	 * true:
-	 * Входные параметры:
-	 * Имя класса:	AyPlayer
-	 * Шаг:			baseObjectInit
-	 *
-	 * Имя структуры-старта:
-	 * ayplayerClassBaseObjectInitFsmStep
-	 *
-	 * Имя шага в объекте.
-	 * fsmStepBaseObjectInit
-	 */
-	bool							flagCamelcase;
 };
 
 /*!
